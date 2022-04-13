@@ -1,0 +1,13 @@
+Tous capacité 15
+
+[A] : valeur de -10 (10 de pris)
+[B] : valeur de -2 (2 de pris)
+
+[A] demande :
+
+Plus haute valeur réelle : 15 - 2 = 13 pour [B]
+Donc autorisé à prendre max(capacité restante [A], capacité restante [B] - valeur réelle pour [B])
+
+Donc [A] prend 2
+
+Faire pareil mais avec la somme des capacités 

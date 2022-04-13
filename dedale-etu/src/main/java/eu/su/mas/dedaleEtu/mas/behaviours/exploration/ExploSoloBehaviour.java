@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.exploration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,7 +56,6 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-
 		if(this.myMap==null)
 			this.myMap= new MapRepresentation();
 		
@@ -122,6 +121,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 				*****************************************************/
 
 				//list of observations associated to the currentPosition
+				System.out.println("Current position : " + myPosition);
 				List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
 				System.out.println(this.myAgent.getLocalName()+" - State of the observations : "+lobs);
 				

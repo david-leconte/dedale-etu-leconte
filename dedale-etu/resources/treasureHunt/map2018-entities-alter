@@ -1,0 +1,6 @@
+mapname:map2018MultiTypes
+wumpus:Golem1:0:free:200:0:1:1:1
+agentCollect:Collect1:3:free:500:-1:0:1:1
+agentCollect:Collect2:3:free:500:-1:0:1:1
+agentCollect:Collect3:3:free:500:-1:0:1:1
+agentCollect:Collect4:3:free:500:-1:0:1:1
