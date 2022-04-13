@@ -21,7 +21,7 @@ public class HelpTerminationBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = 4894827732742647734L;
 
-    public static long endOfWorldTimeout = ExploCoopBehaviour.waitingTime * 425;
+    public static int endOfWorldTimeoutFactor = 425;
 
     private boolean finished = false;
 
@@ -181,7 +181,8 @@ public class HelpTerminationBehaviour extends SimpleBehaviour {
         otherTerminatedAgents.remove(this.myAgent.getLocalName()); // removing the current agent to check sets equality
 
         long fullTimeout = !otherTerminatedAgents.isEmpty() ? this.timeLastMessage + 
-            (HelpTerminationBehaviour.endOfWorldTimeout / otherTerminatedAgents.size()) : Long.MAX_VALUE;
+            ( (ExploCoopBehaviour.waitingTime * HelpTerminationBehaviour.endOfWorldTimeoutFactor) / otherTerminatedAgents.size() ) : 
+            Long.MAX_VALUE;
 
         if (otherTerminatedAgents.equals(this.agentNames)
                 && this.agentsAcknowledgingMyTermination.equals(this.agentNames)) {

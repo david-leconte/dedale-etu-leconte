@@ -25,9 +25,9 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = 965500928136399681L;
 
-    private static long baseTimeout = ExploCoopBehaviour.waitingTime * 4;
-    private static double timeoutLimit = InitNegotiationsBehaviour.baseTimeout * 3.5;
-    private static double timeoutMultiplicationFactor = 1.5;
+    public static int baseTimeoutFactor = 4;
+    public static int timeoutLimitFactor = 4;
+    public static int timeoutMultiplicationFactor = 2;
 
     private boolean finished = false;
 
@@ -51,7 +51,7 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
 		super(myagent);
 		this.myAgent = myagent;
 
-        this.currentTimeout = InitNegotiationsBehaviour.baseTimeout;
+        this.currentTimeout = ExploCoopBehaviour.waitingTime * InitNegotiationsBehaviour.baseTimeoutFactor;
 
         this.ongoingNegotiationsTreasureQuantities = new HashMap<Integer, Integer>();
         this.ongoingNegotiationsTimestamps = new HashMap<Integer, Long>();
@@ -202,7 +202,7 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
 
                 if(pick) {
                     int pickedQuantity = this.myAgent.pick();
-                    this.currentTimeout = baseTimeout;
+                    this.currentTimeout = ExploCoopBehaviour.waitingTime * InitNegotiationsBehaviour.baseTimeoutFactor;
         
                     if(pickedQuantity > 0) {
                         int treasureQuantity = this.ongoingNegotiationsTreasureQuantities.get(negotiationID);
@@ -234,7 +234,9 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
             int negotiationID = entry.getKey();
             long timestamp = entry.getValue();
 
-            if(this.currentTimeout > InitNegotiationsBehaviour.timeoutLimit) {
+            long timeoutLimit = InitNegotiationsBehaviour.timeoutLimitFactor * InitNegotiationsBehaviour.baseTimeoutFactor * ExploCoopBehaviour.waitingTime;
+
+            if(this.currentTimeout > timeoutLimit) {
                 myMap.putResourcefulNode(myPosition);
 
                 this.myAgent.setWaitingNode(myPosition);

@@ -1,7 +1,9 @@
 package eu.su.mas.dedaleEtu.princ;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -11,6 +13,11 @@ import eu.su.mas.dedale.mas.agents.GateKeeperAgent;
 import eu.su.mas.dedale.mas.agents.dedaleDummyAgents.DummyWumpusShift;
 import eu.su.mas.dedaleEtu.mas.agents.CollectorCoopAgent;
 import eu.su.mas.dedaleEtu.mas.agents.ExploreCoopAgent;
+import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyWumpusShiftAdapted;
+import eu.su.mas.dedaleEtu.mas.behaviours.exploration.ExploCoopBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.exploration.HelpTerminationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.negotiation.HandleProposalBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.negotiation.InitNegotiationsBehaviour;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -38,6 +45,7 @@ public class Principal {
 	private static Runtime rt;	
 
 	public static void main(String[] args){
+		treatArgs(args);
 
 		if(ConfigurationFile.COMPUTERisMAIN){
 			//Whe should create the Platform and the GateKeeper, whether the platform is distributed or not 
@@ -310,7 +318,8 @@ public class Principal {
 		Object [] entityParameters={"My parameters"};
 
 		//4) Give the class name of your agent to let the system instantiate it
-		ag=createNewDedaleAgent(c, agentName, DummyWumpusShift.class.getName(), entityParameters);
+		//ag=createNewDedaleAgent(c, agentName, DummyWumpusShift.class.getName(), entityParameters);
+		ag=createNewDedaleAgent(c, agentName, DummyWumpusShiftAdapted.class.getName(), entityParameters);
 		agentList.add(ag);	
 
 		// //1) Get the container where the agent will appear
@@ -325,6 +334,7 @@ public class Principal {
 
 		// //4) Give the class name of your agent to let the system instantiate it
 		// ag=createNewDedaleAgent(c, agentName, DummyWumpusShift.class.getName(), entityParametersg2);
+		//ag=createNewDedaleAgent(c, agentName, DummyWumpusShiftAdapted.class.getName(), entityParametersg2);
 		// agentList.add(ag);	
 
 		/*********
@@ -615,6 +625,61 @@ public class Principal {
 			res=tab1;
 		}
 		return res;
+	}
+
+	private static void treatArgs(String[] args) {
+		List<String> argsList = Arrays.asList(args);
+
+		for(String arg : argsList) {
+			boolean hasNext = argsList.size() > argsList.indexOf(arg) + 1;
+
+			if(!hasNext) break;
+
+			String next = argsList.get(argsList.indexOf(arg) + 1);
+
+			if(arg.contains("--waitingtime") && Long.valueOf(next) > 0) {
+				ExploCoopBehaviour.waitingTime = Long.valueOf(next);
+			}
+
+			else if(arg.contains("--maxlooptrials") && Integer.valueOf(next) > 0) {
+				ExploCoopBehaviour.maxLoopTrials = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--pranddirectionchange") && Double.valueOf(next) >= 0 && Double.valueOf(next) <= 1) {
+				ExploCoopBehaviour.randomWalkDirectionChangeProbability = Double.valueOf(next);
+			}
+
+			else if(arg.contains("--maxstuckpoints") && Integer.valueOf(next) > 0) {
+				ExploCoopBehaviour.maxStuckPoints = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--maxstepsunstucking") && Integer.valueOf(next) > 0) {
+				ExploCoopBehaviour.maxStepsForUnstucking = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--endtimeoutfact") && Integer.valueOf(next) > 0) {
+				HelpTerminationBehaviour.endOfWorldTimeoutFactor = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--valuemargin") && Integer.valueOf(next) > 0) {
+				HandleProposalBehaviour.valueMargin = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--negtimefact1") && Integer.valueOf(next) > 0) {
+				HandleProposalBehaviour.negTimeoutFactor = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--negtimefact2") && Integer.valueOf(next) > 0) {
+				InitNegotiationsBehaviour.baseTimeoutFactor = Integer.valueOf(next);
+			}
+
+			else if(arg.contains("--negtimefact3") && Integer.valueOf(next) > 0) {
+				InitNegotiationsBehaviour.timeoutLimitFactor = Integer.valueOf(next);
+			}
+			else if(arg.contains("--negtimefact4") && Integer.valueOf(next) > 0) {
+				InitNegotiationsBehaviour.timeoutMultiplicationFactor = Integer.valueOf(next);
+			}
+		}
 	}
 }
 

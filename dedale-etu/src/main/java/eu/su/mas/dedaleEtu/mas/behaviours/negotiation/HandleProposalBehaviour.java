@@ -9,6 +9,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.CollectorCoopAgent;
 import eu.su.mas.dedaleEtu.mas.agents.ExploreCoopAgent;
+import eu.su.mas.dedaleEtu.mas.behaviours.exploration.ExploCoopBehaviour;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -26,12 +27,12 @@ public class HandleProposalBehaviour extends SimpleBehaviour {
      * Timeout before sending positive answer
      */
 
-    private static int timeout = 4000;
+    public static int negTimeoutFactor = 10;
 
     /**
      * Allows a max difference in resources between two agents
      */
-    public static final int valueMargin = 80;
+    public static int valueMargin = 80;
 
     private boolean finished = false;
 
@@ -275,7 +276,7 @@ public class HandleProposalBehaviour extends SimpleBehaviour {
             int negotiationID = entry.getKey();
             long timestamp = entry.getValue();
 
-            if(System.currentTimeMillis() > timestamp + HandleProposalBehaviour.timeout) {
+            if(System.currentTimeMillis() > timestamp + (HandleProposalBehaviour.negTimeoutFactor * ExploCoopBehaviour.waitingTime)) {
                 this.treatNegotiationForMyself(negotiationID);
             }
         }

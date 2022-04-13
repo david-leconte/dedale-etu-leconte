@@ -31,22 +31,22 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
-	public static final long waitingTime = 300; // in milliseconds
-	private static final int maxLoopTrials = 3;
+	public static long waitingTime = 300; // in milliseconds
+	public static int maxLoopTrials = 3;
 
 	private List<String> regularPath;
 	private int regularPathStep;
 
-	private static final double randomWalkDirectionChangeProbability = 0.25;
+	public static double randomWalkDirectionChangeProbability = 0.25;
 	private int randomWalkDirection;
 
-	private static final int maxStuckPoints = 10;
+	public static int maxStuckPoints = 10;
 	private int stuckPoints = 0;
 
 	// The index is for the path, the counter counts for every path and tells to
 	// stop when unstucking has been called enough times
 	private int unstuckingStepsIndex;
-	private static final int maxStepsForUnstucking = 5;
+	public static int maxStepsForUnstucking = 5;
 	private int unstuckingStepsCounter;
 	private List<String> unstuckingPath;
 
