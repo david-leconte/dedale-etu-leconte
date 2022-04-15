@@ -25,8 +25,8 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = 965500928136399681L;
 
-    public static int baseTimeoutFactor = 4;
-    public static int timeoutLimitFactor = 4;
+    private static int baseTimeoutFactor = 4;
+    private static int timeoutLimitFactor = 4;
     public static int timeoutMultiplicationFactor = 2;
 
     private boolean finished = false;

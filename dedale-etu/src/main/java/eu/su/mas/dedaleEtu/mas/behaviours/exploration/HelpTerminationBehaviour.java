@@ -21,7 +21,7 @@ public class HelpTerminationBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = 4894827732742647734L;
 
-    public static int endOfWorldTimeoutFactor = 425;
+    private static int endOfWorldTimeoutFactor = 425;
 
     private boolean finished = false;
 

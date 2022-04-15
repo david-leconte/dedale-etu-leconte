@@ -3,7 +3,6 @@ package eu.su.mas.dedaleEtu.princ;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -637,7 +636,11 @@ public class Principal {
 
 			String next = argsList.get(argsList.indexOf(arg) + 1);
 
-			if(arg.contains("--waitingtime") && Long.valueOf(next) > 0) {
+			if(arg.contains("-s")) {
+				ConfigurationFile.SAVE_PATH = next;
+			}
+
+			else if(arg.contains("--waitingtime") && Long.valueOf(next) > 0) {
 				ExploCoopBehaviour.waitingTime = Long.valueOf(next);
 			}
 
@@ -657,10 +660,6 @@ public class Principal {
 				ExploCoopBehaviour.maxStepsForUnstucking = Integer.valueOf(next);
 			}
 
-			else if(arg.contains("--endtimeoutfact") && Integer.valueOf(next) > 0) {
-				HelpTerminationBehaviour.endOfWorldTimeoutFactor = Integer.valueOf(next);
-			}
-
 			else if(arg.contains("--valuemargin") && Integer.valueOf(next) > 0) {
 				HandleProposalBehaviour.valueMargin = Integer.valueOf(next);
 			}
@@ -670,13 +669,6 @@ public class Principal {
 			}
 
 			else if(arg.contains("--negtimefact2") && Integer.valueOf(next) > 0) {
-				InitNegotiationsBehaviour.baseTimeoutFactor = Integer.valueOf(next);
-			}
-
-			else if(arg.contains("--negtimefact3") && Integer.valueOf(next) > 0) {
-				InitNegotiationsBehaviour.timeoutLimitFactor = Integer.valueOf(next);
-			}
-			else if(arg.contains("--negtimefact4") && Integer.valueOf(next) > 0) {
 				InitNegotiationsBehaviour.timeoutMultiplicationFactor = Integer.valueOf(next);
 			}
 		}

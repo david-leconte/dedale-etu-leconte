@@ -11,18 +11,17 @@
             "mainClass": "eu.su.mas.dedaleEtu.princ.Principal",
             "projectName": "dedale-etu",
             "args": [
+                "-s", "data_exec/data_test.json",
                 "--waitingtime", "1",
                 "--maxlooptrials", "3",
                 "--pranddirectionchange", "0.25",
                 "--maxstuckpoints", "10",
                 "--maxstepsunstucking", "5",
-                "--endtimeoutfact", "300",
                 "--valuemargin", "80",
                 "--negtimefact1", "10",
-                "--negtimefact2", "4",
-                "--negtimefact3", "4",
-                "--negtimefact4", "2",
+                "--negtimefact2", "2",
             ],
+            "shortenCommandLine": "argfile"
         },
         /*
         {

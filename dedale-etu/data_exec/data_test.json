@@ -1,0 +1,44 @@
+[
+    {
+        "gold": 182,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "Collect3",
+        "undelivered": 0
+    },
+    {
+        "gold": 0,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "Collect4",
+        "undelivered": 0
+    },
+    {
+        "gold": 0,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "Golem1",
+        "undelivered": 0
+    },
+    {
+        "gold": 53,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "Collect1",
+        "undelivered": 0
+    },
+    {
+        "gold": 0,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "Collect2",
+        "undelivered": 0
+    },
+    {
+        "gold": 0,
+        "diamond": 0,
+        "sentAndDelivered": 0,
+        "agentName": "env",
+        "undelivered": 0
+    }
+]
