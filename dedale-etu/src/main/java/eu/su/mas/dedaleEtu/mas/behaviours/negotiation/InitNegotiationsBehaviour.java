@@ -27,7 +27,7 @@ public class InitNegotiationsBehaviour extends SimpleBehaviour {
 
     private static long baseTimeout = ExploCoopBehaviour.waitingTime * 4;
     private static double timeoutLimit = InitNegotiationsBehaviour.baseTimeout * 3.5;
-    private static double timeoutMultiplicationFactor = 1.5;
+    private static double timeoutMultiplicationFactor = 17;
 
     private boolean finished = false;
 
