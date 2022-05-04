@@ -196,7 +196,6 @@ public class MapRepresentation implements Serializable {
 		List<String> shortestPath = new ArrayList<String>();
 
 		AStar astaralgo = new AStar(g);
-		astaralgo.setCosts(new DistanceCosts());
 
 		astaralgo.compute(idFrom, idTo);// compute the distance to all nodes from idFrom
 

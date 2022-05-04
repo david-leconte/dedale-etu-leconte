@@ -31,7 +31,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
-	public static final long waitingTime = 300; // in milliseconds
+	public static final long waitingTime = 1000; // in milliseconds
 	private static final int maxLoopTrials = 2;
 
 	private List<String> regularPath;
