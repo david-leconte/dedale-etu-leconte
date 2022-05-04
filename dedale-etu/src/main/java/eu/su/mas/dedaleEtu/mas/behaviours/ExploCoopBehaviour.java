@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.exploration;
+package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.util.Iterator;
 import java.util.List;
@@ -105,8 +105,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 		// Set<String> resourcefulNodes = this.myMap.getResourcefulNodes();
 		// boolean resourcefulNodesLeft = this.myMap.resourcefulNodesLeftForAgent(this.myPosition);
 
-		if (this.myPosition != null &&
-				!(this.myAgent instanceof CollectorCoopAgent && ((CollectorCoopAgent) this.myAgent).getLocked())) {
+		if (this.myPosition != null) {
 
 			this.exploreMap();
 		}

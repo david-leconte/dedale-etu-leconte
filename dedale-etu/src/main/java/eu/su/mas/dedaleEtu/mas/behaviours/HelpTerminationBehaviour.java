@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.exploration;
+package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.io.IOException;
 import java.io.Serializable;

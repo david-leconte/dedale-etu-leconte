@@ -6,10 +6,10 @@ import java.util.List;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
-import eu.su.mas.dedaleEtu.mas.behaviours.exploration.ExploCoopBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.exploration.HelpTerminationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.exploration.ReceiveInfoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.exploration.ShareInfoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.ExploCoopBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.HelpTerminationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveInfoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.ShareInfoBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
 import jade.core.behaviours.Behaviour;
