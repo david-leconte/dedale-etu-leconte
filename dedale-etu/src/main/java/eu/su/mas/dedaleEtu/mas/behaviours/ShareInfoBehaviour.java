@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
@@ -40,7 +41,7 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
     @Override
     public void action() {
         this.shareMap();
-        if(this.myAgent instanceof CollectorCoopAgent) this.sharePartialValue();
+        if(this.myAgent instanceof CollectorCoopAgent) this.sharePartialValues();
     }
 
     private void shareMap() {
@@ -125,8 +126,10 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 		// System.out.println("Message sent by agent " + this.myAgent.getLocalName());
 	}
 
-	private void sharePartialValue() {
+	private void sharePartialValues() {
 		CollectorCoopAgent collectorAgent = (CollectorCoopAgent) this.myAgent;
+		Map<String, Couple<Observation, Integer>> allPartialValues = collectorAgent.getPartialValues();
+
 		Observation treasureType = collectorAgent.getMyTreasureType();
 		List<Couple<Observation, Integer>> freeSpaces = this.myAgent.getBackPackFreeSpace();
 
@@ -147,7 +150,7 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 		}
 
 		int partialValue = -(fullCapacity - spaceForTreasure);
-		Couple<Observation, Integer> messageObject = new Couple<Observation, Integer>(treasureType, partialValue);
+		allPartialValues.put(this.myAgent.getLocalName(), new Couple<Observation, Integer>(treasureType, partialValue));
 
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setProtocol("SHARE-PARTVAL");
@@ -158,7 +161,7 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 		}
 
 		try {					
-			msg.setContentObject((Serializable) messageObject);
+			msg.setContentObject((Serializable) allPartialValues);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

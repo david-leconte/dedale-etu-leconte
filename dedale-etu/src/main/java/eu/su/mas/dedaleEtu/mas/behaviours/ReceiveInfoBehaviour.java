@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.util.Map;
 import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
@@ -111,11 +112,28 @@ public class ReceiveInfoBehaviour extends SimpleBehaviour {
         
         ACLMessage msgReceived=this.myAgent.receive(msgTemplate);
         if (msgReceived!=null) {
-            Couple<Observation, Integer> partValContent = null;
             try {
-                partValContent = (Couple<Observation, Integer>) msgReceived.getContentObject();
-                myCollectorAgent.putPartialValue(myCollectorAgent.getLocalName(), partValContent.getLeft(), partValContent.getRight());
+                Map<String, Couple<Observation, Integer>> receivedPartValues = (Map<String, Couple<Observation, Integer>>) msgReceived.getContentObject();
+                Map<String, Couple<Observation, Integer>> myOldPartValues = myCollectorAgent.getPartialValues();
 
+                for (Map.Entry<String, Couple<Observation, Integer>> entry : receivedPartValues.entrySet()) {
+                    String agentName = entry.getKey();
+                    Observation receivedAgentTreasureType = entry.getValue().getLeft();
+                    int receivedValForAgent = entry.getValue().getRight();
+                    
+                    if(myOldPartValues.containsKey(agentName)) {
+                        int storedValForAgent = myOldPartValues.get(agentName).getRight();
+
+                        // The value can only decrease, so checking if received value in inferior to the one stored already
+                        if(receivedValForAgent < storedValForAgent) {
+                            myCollectorAgent.putPartialValue(agentName, receivedAgentTreasureType, receivedValForAgent);
+                        }
+                    }
+
+                    else {
+                        myCollectorAgent.putPartialValue(agentName, receivedAgentTreasureType, receivedValForAgent);
+                    }
+                }
             } catch (UnreadableException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

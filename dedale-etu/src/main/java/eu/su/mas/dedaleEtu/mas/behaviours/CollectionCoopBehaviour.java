@@ -85,14 +85,15 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
             for(Couple<Observation, Integer> c : positionContentList) {
                 Observation treasureType = c.getLeft();
 
-                if(myTreasureType == treasureType && c.getRight() != null) {
+                if( (myTreasureType == treasureType || myTreasureType == Observation.ANY_TREASURE )
+                    && c.getRight() != null) {
                     int treasureQuantity = c.getRight();
 
                     List<Couple<Observation, Integer>> freeSpaces = this.myAgent.getBackPackFreeSpace();
                     int spaceForTreasure = 0;
 
                     for (Couple<Observation, Integer> obs : freeSpaces) {
-                        if (obs.getLeft() == myTreasureType) {
+                        if (obs.getLeft() == treasureType) {
                             spaceForTreasure = obs.getRight();
                         }
                     }
@@ -100,7 +101,7 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
                     int fullCapacity = 0;
 
                     for (Couple<Observation, Integer> obs : this.myAgent.getBackpackCapacities()) {
-                        if (obs.getLeft() == myTreasureType) {
+                        if (obs.getLeft() == treasureType) {
                             fullCapacity = obs.getRight();
                         }
                     }
@@ -120,7 +121,7 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
                     }
                     
                     if(pickOrNot) {
-                        this.pickTreasure(treasureQuantity);
+                        this.pickTreasure(treasureQuantity, treasureType);
                     }
 
                     else {
@@ -131,12 +132,12 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
         }
     }
 
-    private void pickTreasure(int treasureQuantity) {
+    private void pickTreasure(int treasureQuantity, Observation treasureType) {
         String myPosition= this.myAgent.getCurrentPosition();
         MapRepresentation myMap = this.myAgent.getMap();
 
         try {
-        
+            this.myAgent.openLock(treasureType);
             int pickedQuantity = this.myAgent.pick();
             
             if(pickedQuantity > 0) {
@@ -147,7 +148,7 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
                     this.emptiedPositions.add(myPosition);
                 }
 
-                System.out.println(this.myAgent.getLocalName() + " picked " + pickedQuantity+ " " + this.myAgent.getMyTreasureType().toString() + " at " + myPosition);
+                System.out.println(this.myAgent.getLocalName() + " picked " + pickedQuantity+ " " + treasureType.toString() + " at " + myPosition);
                 //System.out.println(this.myAgent.getBackPackFreeSpace() + " of space left in backpack");
             }
         } catch(IndexOutOfBoundsException e) {
