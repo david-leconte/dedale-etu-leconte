@@ -18,7 +18,7 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
     /**
      * Allows a max difference in resources between two agents
      */
-    public static final int valueMargin = 200;
+    public static final int valueMargin = 80;
 
     private boolean finished = false;
 

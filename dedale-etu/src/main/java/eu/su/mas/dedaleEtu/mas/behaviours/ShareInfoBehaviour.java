@@ -58,54 +58,72 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 
 		MapRepresentation mapToBeSent = new MapRepresentation(false);
 
-		if(lobs.size() > this.maxPossibleDirections) this.maxPossibleDirections = lobs.size();
+		// if(lobs.size() > this.maxPossibleDirections) this.maxPossibleDirections = lobs.size();
 
-		//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
-		Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
-		while(iter.hasNext()){
-			Couple<String, List<Couple<Observation, Integer>>> c = iter.next();
-			String nodeId = c.getLeft();
-			List<Couple<Observation, Integer>> content = c.getRight();
+		// //2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
+		// Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
+		// while(iter.hasNext()){
+		// 	Couple<String, List<Couple<Observation, Integer>>> c = iter.next();
+		// 	String nodeId = c.getLeft();
+		// 	List<Couple<Observation, Integer>> content = c.getRight();
 			
-			//System.out.println(myPosition + " " + nodeId);
-			boolean isNodeOnBorder = nodeId == myPosition && lobs.size() < this.maxPossibleDirections;
+		// 	//System.out.println(myPosition + " " + nodeId);
+		// 	boolean isNodeOnBorder = nodeId == myPosition && lobs.size() < this.maxPossibleDirections;
 
-			if(myMap.getClosedNodes().contains(nodeId) && content.isEmpty() && !isNodeOnBorder) {
-				mapToBeSent.addNode(nodeId, MapAttribute.closed);
-			} else {
-				Observation treasureType = null;
-				int lockpicking = -1;
-				int strength = -1;
-				int quantity = -1;
+		// 	if(myMap.getClosedNodes().contains(nodeId) && content.isEmpty() && !isNodeOnBorder) {
+		// 		mapToBeSent.addNode(nodeId, MapAttribute.closed);
+		// 	} else {
+		// 		Observation treasureType = null;
+		// 		int lockpicking = -1;
+		// 		int strength = -1;
+		// 		int quantity = -1;
 
-				for(Couple<Observation, Integer> c2 : content) {
-					if(c2.getLeft() == Observation.GOLD || c2.getLeft() == Observation.DIAMOND) {
-						treasureType = c2.getLeft();
-						quantity = c2.getRight();
-					}
+		// 		for(Couple<Observation, Integer> c2 : content) {
+		// 			if(c2.getLeft() == Observation.GOLD || c2.getLeft() == Observation.DIAMOND) {
+		// 				treasureType = c2.getLeft();
+		// 				quantity = c2.getRight();
+		// 			}
 
-					else if(c2.getLeft() == Observation.LOCKPICKING) {
-						lockpicking = c2.getRight();
-					}
+		// 			else if(c2.getLeft() == Observation.LOCKPICKING) {
+		// 				lockpicking = c2.getRight();
+		// 			}
 
-					else if(c2.getLeft() == Observation.STRENGH) {
-						strength = c2.getRight();
-					}
-				}
+		// 			else if(c2.getLeft() == Observation.STRENGH) {
+		// 				strength = c2.getRight();
+		// 			}
+		// 		}
 
-				if(treasureType != null && lockpicking >= 0) {
-					myMap.putResourcefulNode(nodeId, treasureType, lockpicking, quantity, strength);
-				}
+		// 		if(treasureType != null && lockpicking >= 0) {
+		// 			myMap.putResourcefulNode(nodeId, treasureType, lockpicking, quantity, strength);
+		// 		}
 				
-				//System.out.println(this.myAgent.getLocalName() + " found something at " + nodeId);
-				mapToBeSent.addNode(nodeId, MapAttribute.open);
-			}
+		// 		//System.out.println(this.myAgent.getLocalName() + " found something at " + nodeId);
+		// 		mapToBeSent.addNode(nodeId, MapAttribute.open);
+		// 	}
 
-			//the node may exist, but not necessarily the edge
-			if (myPosition!=nodeId) {
-				mapToBeSent.addEdge(myPosition, nodeId);
-			}
-		}
+		// 	//the node may exist, but not necessarily the edge
+		// 	if (myPosition!=nodeId) {
+		// 		mapToBeSent.addEdge(myPosition, nodeId);
+		// 	}
+		// }
+
+		// // New method, sending a defined paritition of the map instead
+		// int i = 0;
+		// int partition = 3;
+
+		// List<String> openNodes = myMap.getOpenNodes();
+
+		// for(String nodeId : openNodes){
+		// 	if(i++ % partition == 0) mapToBeSent.addNode(nodeId, MapAttribute.open);
+		// }
+
+		// List<String> closedNodes = myMap.getClosedNodes();
+
+		// for(String nodeId : closedNodes){
+		// 	mapToBeSent.addNode(nodeId, MapAttribute.closed);
+		// }
+
+		mapToBeSent = myMap;
 
 		//3) At each time step, the agent blindly send all its graph to its surrounding to illustrate how to share its knowledge (the topology currently) with the the others agents. 	
 		// If it was written properly, this sharing action should be in a dedicated behaviour set, the receivers be automatically computed, and only a subgraph would be shared.
@@ -118,8 +136,7 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 			msgTopo.addReceiver(new AID(agentName,AID.ISLOCALNAME));
 		}
 
-		//SerializableSimpleGraph<String, MapAttribute> sg=mapToBeSent.getSerializableGraph();
-		SerializableSimpleGraph<String, MapAttribute> sg=myMap.getSerializableGraph();
+		SerializableSimpleGraph<String, MapAttribute> sg=mapToBeSent.getSerializableGraph();
 		try {					
 			msgTopo.setContentObject(sg);
 		} catch (IOException e) {

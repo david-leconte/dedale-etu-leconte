@@ -1,7 +1,9 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import dataStructures.tuple.Couple;
@@ -128,9 +130,22 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 		this.reloadMapAndPosition();
 		this.reloadNeighbourhood();
 
+		List<String> resourcefulNotClosedNodes = new ArrayList<String>();
+		Map<String, Map<String, Object>> resourcefulNodes = myMap.getResourcefulNodes();
+
+		for(Map.Entry<String, Map<String, Object>> entry : resourcefulNodes.entrySet()) {
+			if(!myMap.getClosedNodes().contains(entry.getKey())) resourcefulNotClosedNodes.add(entry.getKey());
+		}
+
 		// 2) while openNodes is not empty, continues.
-		if (!this.myMap.hasOpenNode()) {
+		if (!this.myMap.hasOpenNode() && !(this.myAgent instanceof CollectorCoopAgent)) {
 			// Explo finished
+			this.finish();
+		}
+
+		else if(this.myAgent instanceof CollectorCoopAgent && !this.myMap.hasOpenNode() &&
+			!this.myMap.getResourcefulNodes().isEmpty() && resourcefulNotClosedNodes.isEmpty()) {
+			// Collection finished
 			this.finish();
 		}
 
