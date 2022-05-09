@@ -73,11 +73,31 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 			if(myMap.getClosedNodes().contains(nodeId) && content.isEmpty() && !isNodeOnBorder) {
 				mapToBeSent.addNode(nodeId, MapAttribute.closed);
 			} else {
-				if(!content.isEmpty()) {
-					myMap.putResourcefulNode(nodeId);
-					//System.out.println(this.myAgent.getLocalName() + " found something at " + nodeId);
+				Observation treasureType = null;
+				int lockpicking = -1;
+				int strength = -1;
+				int quantity = -1;
+
+				for(Couple<Observation, Integer> c2 : content) {
+					if(c2.getLeft() == Observation.GOLD || c2.getLeft() == Observation.DIAMOND) {
+						treasureType = c2.getLeft();
+						quantity = c2.getRight();
+					}
+
+					else if(c2.getLeft() == Observation.LOCKPICKING) {
+						lockpicking = c2.getRight();
+					}
+
+					else if(c2.getLeft() == Observation.STRENGH) {
+						strength = c2.getRight();
+					}
 				}
 
+				if(treasureType != null && lockpicking >= 0) {
+					myMap.putResourcefulNode(nodeId, treasureType, lockpicking, quantity, strength);
+				}
+				
+				//System.out.println(this.myAgent.getLocalName() + " found something at " + nodeId);
 				mapToBeSent.addNode(nodeId, MapAttribute.open);
 			}
 
@@ -98,7 +118,8 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 			msgTopo.addReceiver(new AID(agentName,AID.ISLOCALNAME));
 		}
 
-		SerializableSimpleGraph<String, MapAttribute> sg=mapToBeSent.getSerializableGraph();
+		//SerializableSimpleGraph<String, MapAttribute> sg=mapToBeSent.getSerializableGraph();
+		SerializableSimpleGraph<String, MapAttribute> sg=myMap.getSerializableGraph();
 		try {					
 			msgTopo.setContentObject(sg);
 		} catch (IOException e) {
@@ -114,7 +135,7 @@ public class ShareInfoBehaviour extends SimpleBehaviour {
 			msgResources.addReceiver(new AID(agentName,AID.ISLOCALNAME));
 		}
 
-		Set<String> resourcefulNodes = myMap.getResourcefulNodes();
+		Map<String, Map<String, Object>> resourcefulNodes = myMap.getResourcefulNodes();
 
 		try {					
 			msgResources.setContentObject((Serializable) resourcefulNodes);

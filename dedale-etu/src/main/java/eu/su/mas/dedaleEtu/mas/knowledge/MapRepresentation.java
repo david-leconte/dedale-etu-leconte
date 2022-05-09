@@ -3,12 +3,15 @@ package eu.su.mas.dedaleEtu.mas.knowledge;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,7 @@ import org.graphstream.ui.view.Viewer;
 import dataStructures.serializableGraph.SerializableNode;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
+import eu.su.mas.dedale.env.Observation;
 import javafx.application.Platform;
 
 /**
@@ -73,7 +77,7 @@ public class MapRepresentation implements Serializable {
 
 	private SerializableSimpleGraph<String, MapAttribute> sg;// used as a temporary dataStructure during migration
 
-	private Set<String> resourcefulNodes;
+	private Map<String, Map<String, Object>> resourcefulNodes;
 
 	public MapRepresentation(boolean opengui) {
 		// System.setProperty("org.graphstream.ui.renderer","org.graphstream.ui.j2dviewer.J2DGraphRenderer");
@@ -89,7 +93,7 @@ public class MapRepresentation implements Serializable {
 		// this.viewer = this.g.display();
 
 		this.nbEdges = 0;
-		this.resourcefulNodes = new HashSet<String>();
+		this.resourcefulNodes = new HashMap<String, Map<String, Object>>();
 	}
 
 	public MapRepresentation() {
@@ -245,56 +249,95 @@ public class MapRepresentation implements Serializable {
 
 		Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
 		// 3) Compute shorterPath
-
-		return getAStarShortestPath(myPosition, closest.get().getLeft());
+		if(!closest.isEmpty()) {
+			return getAStarShortestPath(myPosition, closest.get().getLeft());
+		}
+		else return null;
 	}
 
-	public List<String> getShortestPathToClosestResourcefulNode(String myPosition) {
+	public List<String> getShortestPathToClosestResourcefulNode(String myPosition, Observation treasureType, 
+		int lockpicking, int capacity, int strength) {
 		// 1.2) We don't want the path to where we are now that makes no sense
-		List<String> resourcefulNodesList = new CopyOnWriteArrayList<String>(this.resourcefulNodes);
-		resourcefulNodesList.remove(myPosition);
+		ConcurrentHashMap<String, Map<String, Object>> resourcefulNodesMap = new ConcurrentHashMap<String, Map<String, Object>>(this.resourcefulNodes);
+		resourcefulNodesMap.remove(myPosition);
 
-		for (String node : resourcefulNodesList) {
-			if (this.getClosedNodes().contains(node)) {
-				resourcefulNodesList.remove(node);
+		for (Map.Entry<String, Map<String, Object>> entry : resourcefulNodesMap.entrySet()) {
+			if (this.getClosedNodes().contains(entry.getKey())) {
+				resourcefulNodesMap.remove(entry.getKey());
 			}
 		}
+
+		String finalNode = null;
+		String testedNodeId = null;
+		Map<String, Object> testedNodeProperties = null;
+		List<String> path = null;
 
 		// 2) select the closest one
-		if (resourcefulNodesList.size() == 1) {
-			return getAStarShortestPath(myPosition, resourcefulNodesList.get(0));
-		}
+		if(resourcefulNodesMap.isEmpty()) finalNode = null;
 
-		List<String> pathToResourcefulNode = null;
-		boolean continueTrying = true;
-		int testedNodes = 0;
+		else if (resourcefulNodesMap.size() == 1) {
+			String onlyNodeId = resourcefulNodesMap.entrySet().stream().findFirst().get().getKey();
+			Map<String, Object> onlyNode= resourcefulNodesMap.entrySet().stream().findFirst().get().getValue();
 
-		// All resourceful nodes aren't available at once, keep looping until one is available (== path not null)
+			testedNodeId = onlyNodeId;
+			testedNodeProperties = onlyNode;
 
-		while (continueTrying && testedNodes < resourcefulNodesList.size()) {
+			if((int) onlyNode.get("LOCK") <= lockpicking && (int)  onlyNode.get("QUANTITY") <= capacity &&
+				(int) onlyNode.get("STRENGTH") <= strength &&
+				(treasureType == Observation.ANY_TREASURE || treasureType == onlyNode.get("TYPE"))) {
 
-			List<Couple<String, Integer>> lc = resourcefulNodesList.stream()
-					.map(on -> (getShortestPath(myPosition, on) != null)
-							? new Couple<String, Integer>(on, getShortestPath(myPosition, on).size())
-							: new Couple<String, Integer>(on, Integer.MAX_VALUE))// some nodes my be unreachable if the
-																					// agents do not share at least one
-																					// common node.
-					.collect(Collectors.toList());
-
-			Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
-			// 3) Compute shorterPath
-
-			String finalNode = closest.get().getLeft();
-
-			pathToResourcefulNode = getAStarShortestPath(myPosition, finalNode);
-
-			if (!MapRepresentation.isPathNull(pathToResourcefulNode)) {
-				continueTrying = false;
+				finalNode = onlyNodeId;
 			}
-			testedNodes++;
 		}
 
-		return pathToResourcefulNode;
+		else {
+			boolean continueTrying = true;
+			int testedNodes = 0;
+
+			// All resourceful nodes aren't available at once, keep looping until one is available (== path not null)
+
+			while (continueTrying && testedNodes < resourcefulNodesMap.size()) {
+				List<String> resourcefulNodesList = new ArrayList<String>(resourcefulNodesMap.keySet());
+
+				List<Couple<String, Integer>> lc = resourcefulNodesList.stream()
+						.map(on -> (getShortestPath(myPosition, on) != null)
+								? new Couple<String, Integer>(on, getShortestPath(myPosition, on).size())
+								: new Couple<String, Integer>(on, Integer.MAX_VALUE))// some nodes my be unreachable if the
+																						// agents do not share at least one
+																						// common node.
+						.collect(Collectors.toList());
+
+				Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
+				// 3) Compute shorterPath
+
+				String nodeId = closest.get().getLeft();
+				Map<String, Object> nodeProperties = resourcefulNodesMap.get(nodeId);
+				testedNodeId = nodeId;
+				testedNodeProperties = nodeProperties;
+
+				if((int) nodeProperties.get("LOCK") <= lockpicking && 
+					(int) nodeProperties.get("QUANTITY") <= capacity && 
+					(int) nodeProperties.get("STRENGTH") <= strength && 
+					(treasureType == Observation.ANY_TREASURE || treasureType == nodeProperties.get("TYPE"))){
+					path = getAStarShortestPath(myPosition, nodeId);
+
+					if (!MapRepresentation.isPathNull(path)) {
+						continueTrying = false;
+					}
+				}
+				
+				testedNodes++;
+			}
+		}
+
+		if(finalNode != null && path == null) {
+			path = getAStarShortestPath(myPosition, finalNode);
+			System.out.println("Agent: \n{QUANTITY="+ capacity +", LOCK="+ lockpicking +", STRENGTH="+ strength +", TYPE="+ treasureType+"}" +
+			"\nNode:\n" + testedNodeProperties + 
+			"\n\tId : " + testedNodeId +"\n\tPath : " + path + "\n\n");
+		}
+
+		return path;
 	}
 
 	// public List<String> getShortestPathToFarthestOpenNode(String myPosition) {
@@ -343,7 +386,7 @@ public class MapRepresentation implements Serializable {
 
 	public String getRandomNode() {
 		List<String> nodesList = this.getOpenNodes();
-		nodesList.addAll(this.getClosedNodes());
+		if(nodesList.isEmpty()) nodesList.addAll(this.getClosedNodes());
 		Random rand = new Random();
 		return nodesList.get(rand.nextInt(nodesList.size()));
 	}
@@ -437,7 +480,7 @@ public class MapRepresentation implements Serializable {
 		g.display();
 	}
 
-	public void mergeMap(SerializableSimpleGraph<String, MapAttribute> sgreceived) {
+	public void mergeMap(SerializableSimpleGraph<String, MapAttribute> sgreceived, boolean allNew) {
 		// System.out.println("You should decide what you want to save and how");
 		// System.out.println("We currently blindy add the topology");
 
@@ -454,7 +497,9 @@ public class MapRepresentation implements Serializable {
 			}
 			if (!alreadyIn) {
 				newnode.setAttribute("ui.label", newnode.getId());
-				newnode.setAttribute("ui.class", n.getNodeContent().toString());
+
+				if(allNew) newnode.setAttribute("ui.class", MapAttribute.open.toString());
+				else newnode.setAttribute("ui.class", n.getNodeContent().toString());
 			} else {
 				newnode = this.g.getNode(n.getNodeId());
 				// 3 check its attribute. If it is below the one received, update it.
@@ -484,25 +529,43 @@ public class MapRepresentation implements Serializable {
 				.findAny()).isPresent();
 	}
 
-	public void putResourcefulNode(String node) {
-		this.resourcefulNodes.add(node);
+	public void putResourcefulNode(String node, Observation treasureType, 
+		int lockpicking, int quantity, int strength) {
+		if(treasureType == Observation.DIAMOND || treasureType == Observation.GOLD) {
+			Map<String, Object> nodeProperties = new HashMap<String, Object>();
+
+			nodeProperties.put("LOCK", lockpicking);
+			nodeProperties.put("QUANTITY", quantity);
+			nodeProperties.put("STRENGTH", strength);
+			nodeProperties.put("TYPE", treasureType);
+
+			this.resourcefulNodes.put(node, nodeProperties);
+		}
 	}
 
 	public void removeResourcefulNode(String node) {
-		if (this.resourcefulNodes.contains(node)) {
+		if (this.resourcefulNodes.containsKey(node)) {
 			this.resourcefulNodes.remove(node);
 		}
 	}
 
-	public Set<String> getResourcefulNodes() {
+	public Map<String, Map<String, Object>> getResourcefulNodes() {
 		return this.resourcefulNodes;
 	}
 
-	public Set<String> mergeResourcefulNodes(Set<String> sentNodes) {
-		for (String node : sentNodes) {
-			if (!this.resourcefulNodes.contains(node) && !this.getClosedNodes().contains(node)) {
-				this.addNewNode(node);
-				this.putResourcefulNode(node);
+	public Map<String, Map<String, Object>> mergeResourcefulNodes(Map<String, Map<String, Object>>  sentNodes) {
+		for (Map.Entry<String, Map<String, Object>>  entry : sentNodes.entrySet()) {
+			if (!this.resourcefulNodes.containsKey(entry.getKey()) && !this.getClosedNodes().contains(entry.getKey())) {
+				this.addNewNode(entry.getKey());
+				String nodeId = entry.getKey();
+				Map<String, Object> nodeProperties = entry.getValue();
+
+				this.putResourcefulNode(nodeId, 
+					(Observation) nodeProperties.get("TYPE"), 
+					(int) nodeProperties.get("LOCK"), 
+					(int) nodeProperties.get("QUANTITY"),
+					(int) nodeProperties.get("STRENGTH")
+				);
 			}
 		}
 
@@ -510,8 +573,8 @@ public class MapRepresentation implements Serializable {
 	}
 
 	public boolean resourcefulNodesLeftForAgent(String position) {
-		for (String node : this.resourcefulNodes) {
-			if (node != position && !this.getClosedNodes().contains(node)) {
+		for (Map.Entry<String, Map<String, Object>> entry : this.resourcefulNodes.entrySet()) {
+			if (entry.getKey() != position && !this.getClosedNodes().contains(entry.getKey())) {
 				return true;
 			}
 		}

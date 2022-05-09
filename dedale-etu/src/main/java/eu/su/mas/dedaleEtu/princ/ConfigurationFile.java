@@ -53,7 +53,7 @@ public final class ConfigurationFile {
 	/**
 	 * The environment is either manually designed, or generated with a specific generator
 	 */
-	public static GeneratorType GENERATOR_TYPE=GeneratorType.GS_GRID;
+	public static GeneratorType GENERATOR_TYPE=GeneratorType.MANUAL;
 
 	/**
 	 * 	The GateKeeper is in charge of the Platform and of the agents within, do not change its name.
@@ -73,7 +73,7 @@ public final class ConfigurationFile {
 	/**
 	 * Give the topology 
 	 */
-	public static String INSTANCE_TOPOLOGY=null;
+	//public static String INSTANCE_TOPOLOGY=null;
 	
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2020-topologyExam1-graph.dgs";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/HouatTopology";
@@ -84,12 +84,14 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_TOPOLOGY="resources/map2018-topology";
 	//public static String INSTANCE_TOPOLOGY="resources/map2019-topologyExam1";
 
+	public static String INSTANCE_TOPOLOGY="resources/exam2022/map2022-topologyExam.dgs";
+
 	
 	/**
 	 * Give the elements available on the map, if any
 	 */
 	// If the environment is loaded but you do not want to define elements on the map
-	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/distributedExploration/emptyMap";
+	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/distributedExploration/emptyMap";
 	
 	// otherwise
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2019-elementsExam1";
@@ -99,7 +101,7 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/map2018-elements";
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/mapInterlocking2-elements";
 	
-	
+	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/exam2022/map2022-elements";
 	
 	/************************************
 	 * 
@@ -158,10 +160,11 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/hunt/map2020-entitiesGraph";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/hunt/map2021-entitiesGraph";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/map2018-entities2";
-	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/treasureHunt/map2018-entities-alter";
+	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/treasureHunt/map2018-entities-alter";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/map2019-entitiesExam1";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/monoAgent-entities";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/mapInterlocking2-entities";
+	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/exam2022/map2022-entities.json";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES=null;
 	
 

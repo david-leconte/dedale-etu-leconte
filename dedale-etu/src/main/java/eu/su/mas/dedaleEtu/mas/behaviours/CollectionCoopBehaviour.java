@@ -18,7 +18,7 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
     /**
      * Allows a max difference in resources between two agents
      */
-    public static final int valueMargin = 133;
+    public static final int valueMargin = 200;
 
     private boolean finished = false;
 
@@ -85,7 +85,8 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
             for(Couple<Observation, Integer> c : positionContentList) {
                 Observation treasureType = c.getLeft();
 
-                if( (myTreasureType == treasureType || myTreasureType == Observation.ANY_TREASURE )
+                if( ( treasureType == Observation.DIAMOND || treasureType == Observation.GOLD ) &&
+                    (myTreasureType == treasureType || myTreasureType == Observation.ANY_TREASURE )
                     && c.getRight() != null) {
                     int treasureQuantity = c.getRight();
 
@@ -121,6 +122,8 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
                     }
                     
                     if(pickOrNot) {
+                        //System.out.println(this.myAgent.getLocalName() + " tries to pick " + treasureQuantity +
+                           // " of " + treasureType + " with remaining capacity " + spaceForTreasure);
                         this.pickTreasure(treasureQuantity, treasureType);
                     }
 
@@ -139,20 +142,29 @@ public class CollectionCoopBehaviour extends SimpleBehaviour {
         try {
             this.myAgent.openLock(treasureType);
             int pickedQuantity = this.myAgent.pick();
+
+            //System.out.println(this.myAgent.getLocalName() + " picked " + pickedQuantity +
+                            //" of " + treasureQuantity + " " + treasureType + " available at " + myPosition);
             
             if(pickedQuantity > 0) {
                 
                 if(pickedQuantity == treasureQuantity) { // remove the current node from openlist and add it to closedNodes.
-                    myMap.addNode(myPosition, MapAttribute.closed);
                     myMap.removeResourcefulNode(myPosition);
-                    this.emptiedPositions.add(myPosition);
                 }
 
                 System.out.println(this.myAgent.getLocalName() + " picked " + pickedQuantity+ " " + treasureType.toString() + " at " + myPosition);
                 //System.out.println(this.myAgent.getBackPackFreeSpace() + " of space left in backpack");
             }
+
+            else {
+                // If it doesn't work, then the lockpicking ability is probably not strong enough anyway
+                //this.emptiedPositions.add(myPosition);
+            }
         } catch(IndexOutOfBoundsException e) {
             System.out.println(this.myAgent.getLocalName() + " \"start pick\" error, execution continues");
+        } finally {
+            this.emptiedPositions.add(myPosition);
+            myMap.addNode(myPosition, MapAttribute.closed);
         }
     }
 

@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,7 +74,8 @@ public class ReceiveInfoBehaviour extends SimpleBehaviour {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    myMap.mergeMap(sgreceived);
+                    if(this.myAgent instanceof CollectorCoopAgent) myMap.mergeMap(sgreceived, true);
+                    else myMap.mergeMap(sgreceived, false);
                     // System.out.println("Map chunk received by agent " + this.myAgent.getLocalName());
                 }
 
@@ -83,14 +85,15 @@ public class ReceiveInfoBehaviour extends SimpleBehaviour {
                 );
                 
                 ACLMessage msgReceived2=this.myAgent.receive(msgTemplate2);
+
                 if (msgReceived2!=null) {
-                    Set<String> nodesReceived=null;
+                    Map<String, Map<String, Object>> nodesReceived=null;
                     try {
-                        nodesReceived = (Set<String>) msgReceived2.getContentObject();
+                        nodesReceived = (Map<String, Map<String, Object>>) msgReceived2.getContentObject();
                         myMap.mergeResourcefulNodes(nodesReceived);
 
-                        for(String node : nodesReceived) {
-                            myMap.addNewNode(node);
+                        for(Map.Entry<String, Map<String, Object>>  entry : nodesReceived.entrySet()) {
+                            myMap.addNewNode(entry.getKey());
                         }
                     } catch (UnreadableException e) {
                         // TODO Auto-generated catch block

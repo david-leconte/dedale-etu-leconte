@@ -31,22 +31,22 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 8567689731496787661L;
 
-	public static final long waitingTime = 1000; // in milliseconds
-	private static final int maxLoopTrials = 2;
+	public static final long waitingTime = 500; // in milliseconds
+	private static final int maxLoopTrials = 1;
 
 	private List<String> regularPath;
 	private int regularPathStep;
 
-	private static final double randomWalkDirectionChangeProbability = 0.54;
+	private static final double randomWalkDirectionChangeProbability = 0.5;
 	private int randomWalkDirection;
 
-	private static final int maxStuckPoints = 9;
+	private static final int maxStuckPoints = 3;
 	private int stuckPoints = 0;
 
 	// The index is for the path, the counter counts for every path and tells to
 	// stop when unstucking has been called enough times
 	private int unstuckingStepsIndex;
-	private static final int maxStepsForUnstucking = 20;
+	private static final int maxStepsForUnstucking = 15;
 	private int unstuckingStepsCounter;
 	private List<String> unstuckingPath;
 
@@ -150,7 +150,32 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 				if (this.myAgent instanceof CollectorCoopAgent
 						&& this.myMap.resourcefulNodesLeftForAgent(this.myPosition)) {
-					this.regularPath = this.myMap.getShortestPathToClosestResourcefulNode(this.myPosition);
+
+						Observation myTreasureType = this.myAgent.getMyTreasureType();
+						int myLockPicking = 0;
+						int myStrength = 0;
+
+						for(Couple<Observation, Integer> c : this.myAgent.getMyExpertise()) {
+							if(c.getLeft() == Observation.LOCKPICKING) {
+								myLockPicking = c.getRight();
+							}
+
+							else if(c.getLeft() == Observation.STRENGH) {
+								myStrength = c.getRight();
+							}
+						}
+
+						List<Couple<Observation, Integer>> freeSpaces = this.myAgent.getBackPackFreeSpace();
+						int myCapacity = 0;
+
+						for (Couple<Observation, Integer> obs : freeSpaces) {
+							if (obs.getLeft() == myTreasureType || myTreasureType == Observation.ANY_TREASURE) {
+								myCapacity = obs.getRight();
+							}
+						}
+
+						this.regularPath = this.myMap.getShortestPathToClosestResourcefulNode(this.myPosition, 
+									myTreasureType, myLockPicking, myCapacity, myStrength);
 				}
 
 				else { 
@@ -166,6 +191,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 				trialCounter++;
 
 				if (trialCounter > ExploCoopBehaviour.maxLoopTrials) {
+				// if (trialCounter > ExploCoopBehaviour.maxLoopTrials) {
 					triedRegularTooManyTimes = true;
 					break;
 				}
